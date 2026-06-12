@@ -62,7 +62,7 @@ export default function BreadcrumbComponent() {
           const isCurrent = crumb.index === currentIndex;
           return (
             <li key={crumb.index + "-" + position} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
-              {position > 0 && <span aria-hidden="true" style={{ color: state.muted }}>{separator}</span>}
+              {position > 0 && <span aria-hidden="true" style={{ color: state.muted, transition: state.motion ? "color 0.2s ease" : "none" }}>{separator}</span>}
               {crumb.collapsed ? (
                 <span aria-label="Collapsed breadcrumb levels" style={{ padding: "4px 12px", border: "1px solid " + state.border, borderRadius: 999, color: state.muted }}>...</span>
               ) : isCurrent ? (
@@ -70,7 +70,7 @@ export default function BreadcrumbComponent() {
                   {state.showIcons ? <span aria-hidden="true"># </span> : null}{crumb.label}
                 </span>
               ) : (
-                <a href={"#breadcrumb-" + (crumb.index + 1)} style={{ maxWidth: 192, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", padding: "4px 12px", border: "1px solid " + state.border, borderRadius: 999, color: state.foreground, textDecoration: "none" }}>
+                <a href={"#breadcrumb-" + (crumb.index + 1)} style={{ maxWidth: 192, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", padding: "4px 12px", border: "1px solid " + state.border, borderRadius: 999, color: state.foreground, textDecoration: "none", transition: state.motion ? "color 0.2s ease, border-color 0.2s ease" : "none" }}>
                   {state.showIcons ? <span aria-hidden="true"># </span> : null}{crumb.label}
                 </a>
               )}

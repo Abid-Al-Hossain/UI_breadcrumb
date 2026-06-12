@@ -57,7 +57,7 @@ export default function LivePreview({ state }: { state: BreadcrumbState }) {
           const isCurrent = crumb.index === currentIndex;
           return (
             <li key={`${crumb.index}-${position}`} className="flex items-center gap-2 text-sm">
-              {position > 0 && <span aria-hidden="true" style={{ color: state.muted }}>{separator}</span>}
+              {position > 0 && <span aria-hidden="true" style={{ color: state.muted, transition: state.motion ? "color 0.2s ease" : "none" }}>{separator}</span>}
               {crumb.collapsed ? (
                 <span aria-label="Collapsed breadcrumb levels" className="rounded-full border px-3 py-1" style={{ borderColor: state.border, color: state.muted }}>...</span>
               ) : isCurrent ? (
@@ -66,7 +66,7 @@ export default function LivePreview({ state }: { state: BreadcrumbState }) {
                   {crumb.label}
                 </span>
               ) : (
-                <a href={`#breadcrumb-${crumb.index + 1}`} className="max-w-[12rem] truncate rounded-full border px-3 py-1" style={{ borderColor: state.border, color: state.foreground }}>
+                <a href={`#breadcrumb-${crumb.index + 1}`} className="max-w-[12rem] truncate rounded-full border px-3 py-1" style={{ borderColor: state.border, color: state.foreground, transition: state.motion ? "color 0.2s ease, border-color 0.2s ease" : "none" }}>
                   {state.showIcons && <span aria-hidden="true"># </span>}
                   {crumb.label}
                 </a>
