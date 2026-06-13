@@ -2,22 +2,46 @@
 
 import type { CSSProperties } from "react";
 import type { BreadcrumbState } from "../types";
+import { SYSTEM_FONTS } from "@/components/shared/typography/fontConstants";
 
 type CrumbItem = { index: number; label: string; collapsed?: boolean };
 
 const FALLBACK_LABELS = ["Home", "Products", "Components", "Navigation", "Breadcrumb", "Current page"];
+
+function resolveFont(state: { fontBucket: "system" | "google"; googleFontFamily: string; systemFontIdx: number }): string {
+  return state.fontBucket === "google"
+    ? `"${state.googleFontFamily}", sans-serif`
+    : (SYSTEM_FONTS[state.systemFontIdx]?.css ?? "inherit");
+}
+
+function buildShadow(state: { shadowEnabled: boolean; shadowX: number; shadowY: number; shadowBlur: number; shadowSpread: number; shadowColor: string; shadowOpacity: number }): string {
+  if (!state.shadowEnabled) return "none";
+  const hex = Math.round(state.shadowOpacity * 255).toString(16).padStart(2, "0");
+  return `${state.shadowX}px ${state.shadowY}px ${state.shadowBlur}px ${state.shadowSpread}px ${state.shadowColor}${hex}`;
+}
+
+function buildRadius(state: { radiusLinked: boolean; radius: number; radiusTL: number; radiusTR: number; radiusBR: number; radiusBL: number }): string {
+  return state.radiusLinked
+    ? `${state.radius}px`
+    : `${state.radiusTL}px ${state.radiusTR}px ${state.radiusBR}px ${state.radiusBL}px`;
+}
 
 function shell(state: BreadcrumbState): CSSProperties {
   return {
     width: state.width,
     minHeight: state.height,
     padding: state.padding,
-    borderRadius: state.radius,
-    border: `${state.borderWidth}px solid ${state.border}`,
-    boxShadow: `0 ${Math.round(state.shadow / 3)}px ${state.shadow}px rgba(0,0,0,.28)`,
+    borderRadius: buildRadius(state),
+    border: `${state.borderWidth}px ${state.borderStyle} ${state.border}`,
+    boxShadow: buildShadow(state),
     background: state.background,
     color: state.foreground,
-    fontFamily: state.fontFamily,
+    fontFamily: resolveFont(state),
+    fontStyle: state.fontStyle,
+    textTransform: state.textTransform,
+    textDecoration: state.textDecoration,
+    letterSpacing: `${state.letterSpacing}${state.letterSpacingUnit}`,
+    lineHeight: state.lineHeight,
     opacity: state.disabled ? 0.55 : 1,
   };
 }
@@ -57,7 +81,7 @@ export default function LivePreview({ state }: { state: BreadcrumbState }) {
           const isCurrent = crumb.index === currentIndex;
           return (
             <li key={`${crumb.index}-${position}`} className="flex items-center gap-2 text-sm">
-              {position > 0 && <span aria-hidden="true" style={{ color: state.muted, transition: state.motion ? "color 0.2s ease" : "none" }}>{separator}</span>}
+              {position > 0 && <span aria-hidden="true" style={{ color: state.muted, transition: state.transitionDuration > 0 ? "color 0.2s ease" : "none" }}>{separator}</span>}
               {crumb.collapsed ? (
                 <span aria-label="Collapsed breadcrumb levels" className="rounded-full border px-3 py-1" style={{ borderColor: state.border, color: state.muted }}>...</span>
               ) : isCurrent ? (
@@ -66,7 +90,7 @@ export default function LivePreview({ state }: { state: BreadcrumbState }) {
                   {crumb.label}
                 </span>
               ) : (
-                <a href={`#breadcrumb-${crumb.index + 1}`} className="max-w-[12rem] truncate rounded-full border px-3 py-1" style={{ borderColor: state.border, color: state.foreground, transition: state.motion ? "color 0.2s ease, border-color 0.2s ease" : "none" }}>
+                <a href={`#breadcrumb-${crumb.index + 1}`} className="max-w-[12rem] truncate rounded-full border px-3 py-1" style={{ borderColor: state.border, color: state.foreground, transition: state.transitionDuration > 0 ? "color 0.2s ease, border-color 0.2s ease" : "none" }}>
                   {state.showIcons && <span aria-hidden="true"># </span>}
                   {crumb.label}
                 </a>
