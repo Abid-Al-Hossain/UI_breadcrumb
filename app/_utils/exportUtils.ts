@@ -7,9 +7,13 @@ export function buildExportPayload(state: BreadcrumbState, fileName = "breadcrum
 }
 
 export function buildReactCode(state: BreadcrumbState) {
+  const transition = state.transitionDuration > 0 ? `color ${state.transitionDuration}ms ${state.transitionEasing}` : "none";
   return `import * as React from "react";
 
 const state = ${JSON.stringify(state, null, 2)};
+function resolveFont(s) { return s.fontBucket === "google" ? '"' + s.googleFontFamily + '", sans-serif' : "inherit"; }
+function buildShadow(s) { if (!s.shadowEnabled) return "none"; var hex = Math.round(s.shadowOpacity * 255).toString(16).padStart(2, "0"); return s.shadowX + "px " + s.shadowY + "px " + s.shadowBlur + "px " + s.shadowSpread + "px " + s.shadowColor + hex; }
+
 const labels = ["Home", "Products", "Components", "Navigation", "Breadcrumb", "Current page"];
 
 function clamp(value, min, max) {
@@ -49,12 +53,13 @@ export default function BreadcrumbComponent() {
         minHeight: state.height,
         padding: state.padding,
         borderRadius: state.radius,
-        border: state.borderWidth + "px solid " + state.border,
-        boxShadow: "0 " + Math.round(state.shadow / 3) + "px " + state.shadow + "px rgba(0,0,0,.28)",
-        background: state.background,
+        border: state.borderWidth + "px " + state.borderStyle + " " + (state.disabled && state.disabledUseCustomColors ? state.disabledBorder : state.border),
+        boxShadow: buildShadow(state),
+        background: state.disabled && state.disabledUseCustomColors ? state.disabledBg : state.background,
         color: state.foreground,
-        fontFamily: state.fontFamily,
-        opacity: state.disabled ? 0.55 : 1,
+        fontFamily: resolveFont(state),
+        opacity: state.disabled ? (state.disabledOpacity ?? 0.5) : 1,
+cursor: state.disabled ? state.disabledCursor : undefined,
       }}
     >
       <ol style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, margin: 0, padding: 0, listStyle: "none" }}>
@@ -62,15 +67,15 @@ export default function BreadcrumbComponent() {
           const isCurrent = crumb.index === currentIndex;
           return (
             <li key={crumb.index + "-" + position} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
-              {position > 0 && <span aria-hidden="true" style={{ color: state.muted, transition: state.transitionDuration > 0 ? "$1" : "none" }}>{separator}</span>}
+              {position > 0 && <span aria-hidden="true" style={{ color: state.separatorColor, transition: "${transition}" }}>{separator}</span>}
               {crumb.collapsed ? (
-                <span aria-label="Collapsed breadcrumb levels" style={{ padding: "4px 12px", border: "1px solid " + state.border, borderRadius: 999, color: state.muted }}>...</span>
+                <span aria-label="Collapsed breadcrumb levels" style={{ padding: "4px 12px", border: "1px solid " + state.collapsedBorder, borderRadius: 999, color: state.collapsedColor }}>...</span>
               ) : isCurrent ? (
-                <span aria-current={state.ariaCurrent} style={{ maxWidth: 224, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", padding: "4px 12px", borderRadius: 999, background: state.accent, color: "#020617", fontWeight: 800 }}>
+                <span aria-current={state.ariaCurrent} style={{ maxWidth: 224, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", padding: "4px 12px", borderRadius: 999, background: state.currentBg, color: state.currentText, fontWeight: 800 }}>
                   {state.showIcons ? <span aria-hidden="true"># </span> : null}{crumb.label}
                 </span>
               ) : (
-                <a href={"#breadcrumb-" + (crumb.index + 1)} style={{ maxWidth: 192, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", padding: "4px 12px", border: "1px solid " + state.border, borderRadius: 999, color: state.foreground, textDecoration: "none", transition: state.transitionDuration > 0 ? "$1" : "none" }}>
+                <a href={"#breadcrumb-" + (crumb.index + 1)} style={{ maxWidth: 192, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", padding: "4px 12px", border: "1px solid " + state.linkBorder, borderRadius: 999, color: state.linkColor, textDecoration: "none", transition: "${transition}" }}>
                   {state.showIcons ? <span aria-hidden="true"># </span> : null}{crumb.label}
                 </a>
               )}

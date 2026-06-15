@@ -1,5 +1,4 @@
 "use client";
-
 import { SectionCard } from "@/components/shared/layout/SectionCard";
 import ColorControl from "@/components/shared/color/ColorControl";
 import type { BreadcrumbState } from "../types";
@@ -7,8 +6,28 @@ import type { BreadcrumbState } from "../types";
 type Props = { state: BreadcrumbState; update: <K extends keyof BreadcrumbState>(key: K, value: BreadcrumbState[K]) => void };
 
 export default function ColorsSection({ state, update }: Props) {
-  return <SectionCard title="Colors" subtitle="Colors controls for native breadcrumb generation."><ColorControl label="Accent" value={state.accent} onChange={(value) => update("accent", value)} />
-<ColorControl label="Background" value={state.background} onChange={(value) => update("background", value)} />
-<ColorControl label="Foreground" value={state.foreground} onChange={(value) => update("foreground", value)} />
-<ColorControl label="Muted text" value={state.muted} onChange={(value) => update("muted", value)} /></SectionCard>;
+  return (
+    <div className="space-y-4">
+      <SectionCard title="Shell" subtitle="Outer container colors.">
+        <ColorControl label="Background" value={state.background} onChange={(v) => update("background", v)} />
+        <ColorControl label="Foreground" value={state.foreground} onChange={(v) => update("foreground", v)} />
+        <ColorControl label="Accent" value={state.accent} onChange={(v) => update("accent", v)} />
+        <ColorControl label="Muted" value={state.muted} onChange={(v) => update("muted", v)} />
+        <ColorControl label="Border" value={state.border} onChange={(v) => update("border", v)} />
+      </SectionCard>
+      <SectionCard title="Crumb Links" subtitle="Ancestor (non-current) breadcrumb item colors.">
+        <ColorControl label="Link text" value={state.linkColor} onChange={(v) => update("linkColor", v)} />
+        <ColorControl label="Link border" value={state.linkBorder} onChange={(v) => update("linkBorder", v)} />
+      </SectionCard>
+      <SectionCard title="Current Crumb" subtitle="Active page breadcrumb item colors.">
+        <ColorControl label="Background" value={state.currentBg} onChange={(v) => update("currentBg", v)} />
+        <ColorControl label="Text" value={state.currentText} onChange={(v) => update("currentText", v)} />
+      </SectionCard>
+      <SectionCard title="Separator & Collapse" subtitle="Separator character and collapsed ellipsis colors.">
+        <ColorControl label="Separator" value={state.separatorColor} onChange={(v) => update("separatorColor", v)} />
+        <ColorControl label="Collapsed border" value={state.collapsedBorder} onChange={(v) => update("collapsedBorder", v)} />
+        <ColorControl label="Collapsed text" value={state.collapsedColor} onChange={(v) => update("collapsedColor", v)} />
+      </SectionCard>
+    </div>
+  );
 }

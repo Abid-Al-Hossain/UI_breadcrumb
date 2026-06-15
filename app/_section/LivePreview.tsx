@@ -32,9 +32,9 @@ function shell(state: BreadcrumbState): CSSProperties {
     minHeight: state.height,
     padding: state.padding,
     borderRadius: buildRadius(state),
-    border: `${state.borderWidth}px ${state.borderStyle} ${state.border}`,
+    border: `${state.borderWidth}px ${state.borderStyle} ${state.disabled && state.disabledUseCustomColors ? state.disabledBorder : state.border}`,
     boxShadow: buildShadow(state),
-    background: state.background,
+    background: state.disabled && state.disabledUseCustomColors ? state.disabledBg : state.background,
     color: state.foreground,
     fontFamily: resolveFont(state),
     fontStyle: state.fontStyle,
@@ -42,7 +42,8 @@ function shell(state: BreadcrumbState): CSSProperties {
     textDecoration: state.textDecoration,
     letterSpacing: `${state.letterSpacing}${state.letterSpacingUnit}`,
     lineHeight: state.lineHeight,
-    opacity: state.disabled ? 0.55 : 1,
+    opacity: state.disabled ? state.disabledOpacity : 1,
+    cursor: state.disabled ? state.disabledCursor : undefined,
   };
 }
 
@@ -81,16 +82,16 @@ export default function LivePreview({ state }: { state: BreadcrumbState }) {
           const isCurrent = crumb.index === currentIndex;
           return (
             <li key={`${crumb.index}-${position}`} className="flex items-center gap-2 text-sm">
-              {position > 0 && <span aria-hidden="true" style={{ color: state.muted, transition: state.transitionDuration > 0 ? "color 0.2s ease" : "none" }}>{separator}</span>}
+              {position > 0 && <span aria-hidden="true" style={{ color: state.separatorColor, transition: state.transitionDuration > 0 ? "color 0.2s ease" : "none" }}>{separator}</span>}
               {crumb.collapsed ? (
-                <span aria-label="Collapsed breadcrumb levels" className="rounded-full border px-3 py-1" style={{ borderColor: state.border, color: state.muted }}>...</span>
+                <span aria-label="Collapsed breadcrumb levels" className="rounded-full border px-3 py-1" style={{ borderColor: state.collapsedBorder, color: state.collapsedColor }}>...</span>
               ) : isCurrent ? (
-                <span aria-current={state.ariaCurrent} className="max-w-[14rem] truncate rounded-full px-3 py-1 font-bold" style={{ background: state.accent, color: "#020617" }}>
+                <span aria-current={state.ariaCurrent} className="max-w-[14rem] truncate rounded-full px-3 py-1 font-bold" style={{ background: state.currentBg, color: state.currentText }}>
                   {state.showIcons && <span aria-hidden="true"># </span>}
                   {crumb.label}
                 </span>
               ) : (
-                <a href={`#breadcrumb-${crumb.index + 1}`} className="max-w-[12rem] truncate rounded-full border px-3 py-1" style={{ borderColor: state.border, color: state.foreground, transition: state.transitionDuration > 0 ? "color 0.2s ease, border-color 0.2s ease" : "none" }}>
+                <a href={`#breadcrumb-${crumb.index + 1}`} className="max-w-[12rem] truncate rounded-full border px-3 py-1" style={{ borderColor: state.linkBorder, color: state.linkColor, transition: state.transitionDuration > 0 ? "color 0.2s ease, border-color 0.2s ease" : "none" }}>
                   {state.showIcons && <span aria-hidden="true"># </span>}
                   {crumb.label}
                 </a>
