@@ -11,9 +11,11 @@ export default function LayoutSection({ state, update }: Props) {
   return (
     <div className="space-y-4">
       <SectionCard title="Layout" subtitle="Separator character and collapse mode.">
+      <div className="space-y-4">
         <Select label="Separator" value={state.separator} options={["slash", "chevron", "dot", "pipe"]} onChange={(value) => update("separator", value)} />
         <Select label="Collapse mode" value={state.collapseMode} options={["none", "middle", "start", "end"]} onChange={(value) => update("collapseMode", value)} />
-      </SectionCard>
+      </div>
+    </SectionCard>
       <SectionCard title="Icons" subtitle="Show icons alongside breadcrumb labels.">
         <Switch label="Show icons" checked={state.showIcons} onChange={(value) => update("showIcons", value)} />
       </SectionCard>
